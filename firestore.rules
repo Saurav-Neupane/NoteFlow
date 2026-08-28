@@ -1,0 +1,81 @@
+rules_version = '2';
+
+// NoteFlow Firestore security rules.
+// Every document is owned by exactly one user, identified by the `user_id`
+// field (or, for per-user singleton docs, by the document id). A request is
+// only allowed when the caller is signed in and owns the target document.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // The doc already stored belongs to the caller.
+    function ownsExisting() {
+      return isSignedIn() && resource.data.user_id == request.auth.uid;
+    }
+
+    // The doc being written is stamped with the caller's uid.
+    function ownsIncoming() {
+      return isSignedIn() && request.resource.data.user_id == request.auth.uid;
+    }
+
+    // Collections keyed by a `user_id` field.
+    match /notes/{noteId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /folders/{folderId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /tags/{tagId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /attachments/{attachmentId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /versions/{versionId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /activity_logs/{logId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    match /note_shares/{shareId} {
+      allow read, delete: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+    }
+
+    // Per-user singleton documents keyed by the user's uid as the doc id.
+    match /settings/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /profiles/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Deny anything not explicitly matched above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

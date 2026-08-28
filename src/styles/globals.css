@@ -1,0 +1,286 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 99%;
+    --foreground: 240 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 6% 93%;
+    --secondary-foreground: 240 10% 15%;
+    --muted: 240 6% 93%;
+    --muted-foreground: 240 4% 40%;
+    --accent: 240 6% 93%;
+    --accent-foreground: 240 10% 15%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 239 84% 67%;
+    --radius: 1rem;
+    --sidebar: 240 8% 97%;
+    --sidebar-foreground: 240 6% 30%;
+    --sidebar-border: 240 6% 90%;
+
+    /* Note palette */
+    --note-default: 220 14% 92%;
+    --note-red: 0 78% 88%;
+    --note-orange: 24 84% 86%;
+    --note-amber: 42 90% 82%;
+    --note-green: 142 52% 84%;
+    --note-teal: 178 60% 80%;
+    --note-blue: 217 80% 84%;
+    --note-indigo: 234 70% 86%;
+    --note-purple: 270 66% 88%;
+    --note-pink: 330 70% 88%;
+  }
+
+  .dark {
+    --background: 240 6% 6%;
+    --foreground: 220 20% 94%;
+    --card: 240 6% 9%;
+    --card-foreground: 220 20% 94%;
+    --popover: 240 7% 8%;
+    --popover-foreground: 220 20% 94%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 14%;
+    --secondary-foreground: 220 20% 90%;
+    --muted: 240 5% 14%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 240 5% 16%;
+    --accent-foreground: 220 20% 90%;
+    --destructive: 0 72% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 16%;
+    --input: 240 5% 16%;
+    --ring: 239 84% 67%;
+    --sidebar: 240 7% 8%;
+    --sidebar-foreground: 240 5% 55%;
+    --sidebar-border: 240 5% 14%;
+
+    /* Note palette (dark variants) */
+    --note-default: 220 12% 16%;
+    --note-red: 0 58% 22%;
+    --note-orange: 24 55% 22%;
+    --note-amber: 42 55% 20%;
+    --note-green: 142 42% 20%;
+    --note-teal: 178 45% 20%;
+    --note-blue: 217 55% 24%;
+    --note-indigo: 234 50% 26%;
+    --note-purple: 270 48% 28%;
+    --note-pink: 330 48% 26%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  /* User-controlled base font size (Settings → Appearance). rem-based
+     Tailwind utilities scale off this root value. */
+  html[data-font-size='sm'] {
+    font-size: 14px;
+  }
+  html[data-font-size='lg'] {
+    font-size: 18px;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-primary/25;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/25 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+}
+
+@layer components {
+  /* ---- Glass surfaces ---- */
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl dark:bg-slate-900/60;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .glass-strong {
+    @apply bg-white/85 backdrop-blur-2xl dark:bg-slate-900/80;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  /* ---- Premium gradient text ---- */
+  .text-gradient {
+    @apply bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent;
+  }
+
+  /* ---- Note card surface ---- */
+  .note-surface {
+    background: hsl(var(--note-default) / 0.55);
+    @apply rounded-2xl border border-black/5 dark:border-white/10;
+  }
+
+  /* ---- FAB ---- */
+  .fab-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 55%, #d946ef 100%);
+    @apply text-white;
+    box-shadow:
+      0 8px 24px -6px rgba(99, 102, 241, 0.5),
+      0 4px 12px -4px rgba(139, 92, 246, 0.4);
+  }
+
+  /* ---- Hero / empty state blobs ---- */
+  .blob {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  /* ---- Skeleton shimmer ---- */
+  .skeleton {
+    @apply relative overflow-hidden rounded-xl bg-muted;
+  }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--muted-foreground) / 0.06),
+      transparent
+    );
+    animation: shimmer 1.8s linear infinite;
+    background-size: 200% 100%;
+  }
+
+  /* ---- Focus ring polish ---- */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+}
+
+/* ===============================
+   Rich text editor (contenteditable)
+   =============================== */
+.editor-area {
+  @apply text-[15px] leading-7 focus:outline-none;
+}
+
+.editor-area h1 {
+  @apply text-3xl font-bold mt-6 mb-3 leading-tight;
+}
+.editor-area h2 {
+  @apply text-2xl font-bold mt-5 mb-2.5 leading-tight;
+}
+.editor-area h3 {
+  @apply text-xl font-semibold mt-4 mb-2 leading-snug;
+}
+.editor-area p {
+  @apply my-1.5;
+}
+.editor-area ul {
+  @apply list-disc pl-6 my-2 space-y-1;
+}
+.editor-area ol {
+  @apply list-decimal pl-6 my-2 space-y-1;
+}
+.editor-area blockquote {
+  @apply border-l-4 border-primary/50 pl-4 my-2 italic text-muted-foreground;
+}
+.editor-area pre {
+  @apply my-3 rounded-xl bg-black/80 dark:bg-black/60 p-4 text-sm text-green-300 overflow-x-auto;
+}
+.editor-area code {
+  @apply rounded bg-muted px-1.5 py-0.5 text-[0.85em] font-mono;
+}
+.editor-area pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+.editor-area hr {
+  @apply my-4 border-muted-foreground/20;
+}
+.editor-area mark {
+  @apply bg-yellow-300/80 text-black rounded px-0.5;
+}
+.editor-area a {
+  @apply text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary;
+}
+.editor-area img {
+  @apply my-3 rounded-xl max-w-full shadow-lg;
+}
+.editor-area table {
+  @apply my-3 w-full border-collapse text-sm;
+}
+.editor-area th,
+.editor-area td {
+  @apply border border-border px-3 py-2 text-left;
+}
+.editor-area th {
+  @apply bg-muted font-semibold;
+}
+.editor-area .task-check {
+  @apply mr-2 align-middle;
+}
+.editor-area .drop-cap::first-letter {
+  @apply float-left text-6xl font-bold leading-[0.85] mr-2 text-gradient;
+}
+
+/* ---- Drawing canvas ---- */
+.drawing-canvas {
+  touch-action: none;
+  @apply cursor-crosshair rounded-xl;
+}
+
+/* ---- Hide number input spinners ---- */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* User opt-in reduced motion (Settings → Accessibility), independent of the
+   OS-level media query above. */
+html[data-reduce-motion='true'] *,
+html[data-reduce-motion='true'] *::before,
+html[data-reduce-motion='true'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

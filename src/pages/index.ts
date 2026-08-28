@@ -1,0 +1,9 @@
+export { AuthPage } from './auth';
+export { DashboardPage } from './dashboard';
+export { NotesPage } from './notes';
+export { NoteEditorPage } from './note-editor';
+export { FoldersPage } from './folders';
+export { TagsPage } from './tags';
+export { TrashPage } from './trash';
+export { SettingsPage } from './settings';
+export { NotFoundPage } from './not-found';
