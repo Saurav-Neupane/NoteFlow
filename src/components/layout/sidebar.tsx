@@ -8,6 +8,7 @@ import {
   Archive,
   Trash2,
   Lock,
+  LockKeyhole,
   Folder,
   Tag,
   Settings,
@@ -45,6 +46,7 @@ export function Sidebar({ notes, userId, collapsed, onToggle }: SidebarProps) {
     { key: '/notes/recent', label: 'Recent', icon: Clock, count: 0 },
     { key: '/notes/archived', label: 'Archived', icon: Archive, count: counts.archived },
     { key: '/notes/locked', label: 'Locked', icon: Lock, count: counts.locked },
+    { key: '/lock-anything', label: 'Lock Anything', icon: LockKeyhole, count: 0 },
     { key: '/trash', label: 'Trash', icon: Trash2, count: counts.trash },
   ];
 

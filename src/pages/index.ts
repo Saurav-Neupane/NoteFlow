@@ -7,3 +7,4 @@ export { TagsPage } from './tags';
 export { TrashPage } from './trash';
 export { SettingsPage } from './settings';
 export { NotFoundPage } from './not-found';
+export { LockAnythingPage } from './lock-anything';

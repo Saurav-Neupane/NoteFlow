@@ -1,0 +1,9 @@
+Get-Content : Cannot find path 'C:\Users\saura\OneDrive\Desktop\Noteflow\capacitor.config.json' because it does not 
+exist.
+At line:1 char:2
++ (Get-Content capacitor.config.json) -replace '"webDir": "www"', '"web ...
++  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\saura\...tor.config.json:String) [Get-Content], ItemNotFoundEx 
+   ception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand
+ 

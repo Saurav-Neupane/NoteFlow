@@ -14,6 +14,7 @@ import {
   SettingsPage,
   NotFoundPage,
 } from '@/pages';
+import { LockAnythingPage } from '@/pages/lock-anything';
 
 /** Router-level error screen — catches loader/render errors under the shell. */
 function RouteErrorElement() {
@@ -113,6 +114,10 @@ export const router = createBrowserRouter([
       {
         path: '/settings',
         element: <SettingsRoute />,
+      },
+      {
+        path: '/lock-anything',
+        element: <WithUser>{() => <LockAnythingPage />}</WithUser>,
       },
     ],
   },

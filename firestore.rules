@@ -73,6 +73,15 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // Vault records contain encrypted content and are accessible only to the
+    // Admin SDK inside trusted callable functions (never directly by clients).
+    match /locked_secrets/{secretId} {
+      allow read, write: if false;
+    }
+    match /vault_audit/{auditId} {
+      allow read, write: if false;
+    }
+
     // Deny anything not explicitly matched above.
     match /{document=**} {
       allow read, write: if false;
