@@ -1,7 +1,9 @@
+import { Capacitor } from '@capacitor/core';
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import {
   getAuth,
-  GoogleAuthProvider,
+  initializeAuth,
+  indexedDBLocalPersistence,
   setPersistence,
   browserLocalPersistence,
   type Auth,
@@ -25,17 +27,20 @@ const firebaseConfig = {
 };
 
 export const app: FirebaseApp = initializeApp(firebaseConfig);
-export const auth: Auth = getAuth(app);
+// IndexedDB persistence survives WebView restarts in the Capacitor app. Browsers
+// retain their normal local Firebase Auth persistence.
+export const auth: Auth = Capacitor.isNativePlatform()
+  ? initializeAuth(app, { persistence: indexedDBLocalPersistence })
+  : getAuth(app);
 export const db: Firestore = getFirestore(app);
 
-/** Reusable Google OAuth provider. */
-export const googleProvider = new GoogleAuthProvider();
-
-// Keep the user signed in across reloads (mirrors Supabase's persistSession).
-// Fire-and-forget: local persistence is the default, this is just explicit.
-void setPersistence(auth, browserLocalPersistence).catch(() => {
-  /* falls back to in-memory persistence if storage is unavailable */
-});
+// Browser Firebase Auth retains the normal local persistence. Native builds use
+// IndexedDB persistence above so JS Auth matches the account used by Firestore.
+if (!Capacitor.isNativePlatform()) {
+  void setPersistence(auth, browserLocalPersistence).catch(() => {
+    /* Firebase falls back to in-memory persistence if storage is unavailable. */
+  });
+}
 
 /**
  * Resolves once the initial auth state has been restored from storage.

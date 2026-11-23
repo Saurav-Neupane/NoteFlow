@@ -1,4 +1,4 @@
-export { app, auth, db, googleProvider, authReady, currentUserId } from './firebase';
+export { app, auth, db, authReady, currentUserId } from './firebase';
 export * from './auth.service';
 export * from './note.service';
 export * from './folder.service';

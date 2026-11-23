@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithCredential,
   signOut,
   sendPasswordResetEmail,
   updatePassword as fbUpdatePassword,
@@ -10,9 +11,13 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  GoogleAuthProvider,
   type User,
+  type UserCredential,
 } from 'firebase/auth';
-import { auth, googleProvider, authReady } from './firebase';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { Capacitor } from '@capacitor/core';
+import { auth, authReady } from './firebase';
 import { type Result } from '@/types';
 
 /** Authentication + profile services built on Firebase Auth. */
@@ -38,29 +43,25 @@ export function mapUser(user: User): AuthSessionUser {
 function friendlyError(err: unknown): string {
   const code = (err as { code?: string })?.code ?? '';
   switch (code) {
-    case 'auth/invalid-email':
-      return 'That email address looks invalid.';
-    case 'auth/user-disabled':
-      return 'This account has been disabled.';
+    case 'auth/invalid-email': return 'That email address looks invalid.';
+    case 'auth/user-disabled': return 'This account has been disabled.';
     case 'auth/user-not-found':
     case 'auth/invalid-credential':
-    case 'auth/wrong-password':
-      return 'Incorrect email or password.';
-    case 'auth/email-already-in-use':
-      return 'An account with this email already exists.';
-    case 'auth/weak-password':
-      return 'Password should be at least 6 characters.';
+    case 'auth/wrong-password': return 'Incorrect email or password.';
+    case 'auth/email-already-in-use': return 'An account with this email already exists.';
+    case 'auth/weak-password': return 'Password should be at least 6 characters.';
     case 'auth/popup-closed-by-user':
     case 'auth/cancelled-popup-request':
-      return 'Sign-in was cancelled.';
-    case 'auth/popup-blocked':
-      return 'Popup was blocked by the browser. Please allow popups and try again.';
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Please wait a moment and try again.';
-    case 'auth/network-request-failed':
-      return 'Network error. Check your connection and try again.';
-    default:
-      return (err as Error)?.message?.replace(/^Firebase:\s*/, '') || 'Something went wrong.';
+    case '12501': return 'Google sign-in was cancelled.';
+    case '10': return 'Google sign-in is not configured for this app signing certificate. Add the Android SHA-1 to Firebase and install the updated google-services.json.';
+    case 'auth/account-exists-with-different-credential': return 'An account already exists with this email using a different sign-in method.';
+    case 'auth/credential-already-in-use': return 'This Google account is already linked to another NoteFlow account.';
+    case 'auth/operation-not-allowed': return 'This sign-in method is not enabled in Firebase Authentication.';
+    case 'auth/unauthorized-domain': return 'This app domain is not authorized for Firebase sign-in.';
+    case 'auth/network-request-failed': return 'Network error. Check your connection and try again.';
+    case 'auth/too-many-requests': return 'Too many attempts. Please wait a moment and try again.';
+    case 'auth/popup-blocked': return 'Popup was blocked by the browser. Please allow popups and try again.';
+    default: return (err as Error)?.message?.replace(/^Firebase:\\s*/, '') || 'Something went wrong.';
   }
 }
 
@@ -95,7 +96,19 @@ export async function signUpWithEmail(
 
 export async function signInWithGoogle(): Promise<Result<AuthSessionUser>> {
   try {
-    const cred = await signInWithPopup(auth, googleProvider);
+    let cred: UserCredential;
+    if (Capacitor.isNativePlatform()) {
+      // Native Google chooser avoids unsupported OAuth popups in Android WebViews.
+      // The resulting Google ID token is exchanged for a Firebase JS Auth
+      // credential so Firestore and callable functions share this session.
+      const result = await FirebaseAuthentication.signInWithGoogle();
+      const idToken = result.credential?.idToken;
+      if (!idToken) throw new Error('Google did not return an ID token.');
+      cred = await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
+    } else {
+      const provider = new GoogleAuthProvider();
+      cred = await signInWithPopup(auth, provider);
+    }
     return { data: mapUser(cred.user), error: null };
   } catch (err) {
     return { data: null, error: friendlyError(err) };
